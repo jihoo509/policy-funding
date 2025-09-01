@@ -3,6 +3,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Checkbox } from './ui/checkbox';
 import { PrivacyPolicyDialog } from './PrivacyPolicyDialog';
+import UtmHiddenFields from './UtmHiddenFields'; // ✨ 1. UTM 컴포넌트 불러오기
 
 interface OnlineAnalysisFormProps {
   title?: string;
@@ -10,15 +11,15 @@ interface OnlineAnalysisFormProps {
 
 export function OnlineAnalysisForm({ title }: OnlineAnalysisFormProps) {
   const [formData, setFormData] = useState({
-    // 기존 필드
-    name: '', // 대표자 이름
+    // 대표자 정보
+    name: '',
     birthDateFirst: '',
     birthDateSecond: '',
     gender: '',
     phoneNumber: '',
     agreedToTerms: false,
 
-    // ✨ 정책자금용 새 필드
+    // 정책자금용 새 필드
     companyName: '',
     businessNumber: '',
     existingLoanStatus: '',
@@ -61,15 +62,21 @@ export function OnlineAnalysisForm({ title }: OnlineAnalysisFormProps) {
       hasAppliedForPolicyFund: '',
     });
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  // ✨ 2. event 타입을 HTMLFormElement로 바꿔줍니다.
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isSubmitting) return;
     setIsSubmitting(true);
     
+    // ✨ 3. 숨겨진 UTM 필드를 포함한 모든 폼 데이터를 읽어옵니다.
+    const form = event.currentTarget;
+    const formElements = Object.fromEntries(new FormData(form).entries());
+
     const now = new Date();
     const kstDate = new Date(now.getTime() + (9 * 60 * 60 * 1000));
 
     try {
+      // ✨ 4. payload 생성 방식을 수정합니다.
       const payload = {
         type: 'online' as const,
         site: '정책자금',
@@ -78,8 +85,7 @@ export function OnlineAnalysisForm({ title }: OnlineAnalysisFormProps) {
         rrnFront: formData.birthDateFirst.trim(),
         rrnBack: formData.birthDateSecond.trim(),
         gender: formData.gender as '남' | '여' | '',
-
-        // ✨ 정책자금 데이터 추가
+        
         companyName: formData.companyName.trim(),
         businessNumber: formData.businessNumber.trim(),
         existingLoanStatus: formData.existingLoanStatus.trim(),
@@ -87,6 +93,9 @@ export function OnlineAnalysisForm({ title }: OnlineAnalysisFormProps) {
         hasAppliedForPolicyFund: formData.hasAppliedForPolicyFund,
 
         requestedAt: kstDate.toISOString(),
+
+        // 읽어온 UTM 데이터를 payload에 합쳐줍니다.
+        ...formElements
       };
 
       const res = await fetch('/api/submit', {
@@ -127,6 +136,9 @@ export function OnlineAnalysisForm({ title }: OnlineAnalysisFormProps) {
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-3">
+          {/* ✨ 5. 비밀 입력 칸(UTM 정보)을 폼 안에 추가합니다. */}
+          <UtmHiddenFields />
+
           <div className="space-y-2">
             <label className="text-white text-base block">대표자 이름</label>
             <Input ref={nameInputRef} placeholder="대표자 성함을 입력" value={formData.name} onChange={e => handleInputChange('name', e.target.value)} onFocus={() => handleInputFocus(nameInputRef)} className="bg-white border-0 h-12 text-gray-800 placeholder:text-gray-500" required />
@@ -208,3 +220,4 @@ export function OnlineAnalysisForm({ title }: OnlineAnalysisFormProps) {
     </div>
   );
 }
+

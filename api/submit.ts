@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 export const config = { runtime: 'nodejs' };
 
+// ✨ 1. SubmitBody 타입에 UTM 필드들을 추가합니다.
 type SubmitBody = {
   type: 'phone' | 'online';
   site?: string;
@@ -12,12 +13,23 @@ type SubmitBody = {
   rrnBack?: string;
   gender?: '남' | '여';
   
-  // ✨ 정책자금 필드
+  // 정책자금 필드
   companyName?: string;
   businessNumber?: string;
   existingLoanStatus?: string;
   isLoanOverdue?: string;
   hasAppliedForPolicyFund?: string;
+
+  // UTM 필드
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  utm_content?: string;
+  utm_term?: string;
+  landing_page?: string;
+  referrer?: string;
+  first_utm?: string;
+  last_utm?: string;
 };
 
 const { GH_TOKEN, GH_REPO_FULLNAME } = process.env;
@@ -63,7 +75,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   
   const labels = [`type:${type}`, `site:${site}`];
 
-  const payload = { ...body, requestedAt: new Date().toISOString() };
+  // ✨ 2. payload 생성 방식을 수정하여, form에서 보낸 모든 정보(UTM 포함)를 받도록 합니다.
+  const payload = {
+    ...body, // form에서 보낸 모든 데이터를 그대로 포함
+    requestedAt: new Date().toISOString(),
+    ua: (req.headers['user-agent'] || '').toString().slice(0, 200),
+    ip: (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').toString(),
+  };
+  
   delete (payload as any).headers;
 
   const bodyMd = '```json\n' + JSON.stringify(payload, null, 2) + '\n```';
@@ -92,3 +111,4 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ ok: false, error: 'Internal Server Error', detail: e?.message || String(e) });
   }
 }
+
