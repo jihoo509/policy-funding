@@ -216,7 +216,11 @@ export function OnlineAnalysisForm({ title }: OnlineAnalysisFormProps) {
           </div>
         </form>
       </div>
-      <PrivacyPolicyDialog isOpen={showPrivacyDialog} onClose={() => setShowPrivacyDialog(false)} />
+      <PrivacyPolicyDialog
+  isOpen={showPrivacyDialog}
+  onClose={() => setShowPrivacyDialog(false)}
+  onAgree={() => handleInputChange('agreedToTerms', true)}
+/>
     </div>
   );
 }
