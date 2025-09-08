@@ -12,12 +12,13 @@ type SubmitBody = {
   rrnFront?: string;
   rrnBack?: string;
   gender?: '남' | '여';
-
-  // 경정청구 필드
+  
+  // 정책자금 필드
   companyName?: string;
   businessNumber?: string;
-  isFirstStartup?: string;
-  hasPastClaim?: string;
+  existingLoanStatus?: string;
+  isLoanOverdue?: string;
+  hasAppliedForPolicyFund?: string;
 
   // UTM 필드
   utm_source?: string;
