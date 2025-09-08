@@ -12,13 +12,12 @@ type SubmitBody = {
   rrnFront?: string;
   rrnBack?: string;
   gender?: '남' | '여';
-  
-  // 정책자금 필드
+
+  // 경정청구 필드
   companyName?: string;
   businessNumber?: string;
-  existingLoanStatus?: string;
-  isLoanOverdue?: string;
-  hasAppliedForPolicyFund?: string;
+  isFirstStartup?: string;
+  hasPastClaim?: string;
 
   // UTM 필드
   utm_source?: string;
@@ -69,7 +68,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   
   const birth6 = type === 'phone' ? (birth || '') : (rrnFront || '');
   const rrnFull = type === 'online' && rrnFront && rrnBack ? `${rrnFront}-${rrnBack}` : '';
-  const title = `[${requestKo}] ${name || '이름 미입력'} / ${gender || '성별 미선택'} / ${masked} / ${body.phone || '전화번호 미입력'}`;
+  const masked = rrnFull ? `${rrnFull.slice(0, 8)}******` : (birth6 ? `${birth6}-*******` : '');
 
   const title = `[${requestKo}] ${name}(${companyName || '사업자명 미입력'}) / ${masked}`;
   
