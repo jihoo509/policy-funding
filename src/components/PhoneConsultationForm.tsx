@@ -23,9 +23,8 @@ export function PhoneConsultationForm({ title }: PhoneConsultationFormProps) {
     // 사업자 정보
     companyName: '',
     businessNumber: '',
-    existingLoanStatus: '',
-    isLoanOverdue: '',
-    hasAppliedForPolicyFund: '',
+    isFirstStartup: '',
+    hasPastClaim: '',
   });
 
   const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
@@ -59,9 +58,8 @@ export function PhoneConsultationForm({ title }: PhoneConsultationFormProps) {
       notes: '',
       companyName: '',
       businessNumber: '',
-      existingLoanStatus: '',
-      isLoanOverdue: '',
-      hasAppliedForPolicyFund: '',
+      isFirstStartup: '',
+      hasPastClaim: '',
     });
     setAgreedToPrivacy(false);
     setAgreedToThirdParty(false);
@@ -93,7 +91,7 @@ export function PhoneConsultationForm({ title }: PhoneConsultationFormProps) {
     try {
       const payload = {
         type: 'phone' as const,
-        site: '정책자금',
+        site: '경정청구',
         name: formData.name.trim(),
         phone: `010-${(formData.phoneNumber || '').trim()}`,
         birth: formData.birthDate.trim(),
@@ -101,9 +99,8 @@ export function PhoneConsultationForm({ title }: PhoneConsultationFormProps) {
         notes: formData.notes.trim(),
         companyName: formData.companyName.trim(),
         businessNumber: formData.businessNumber.trim(),
-        existingLoanStatus: formData.existingLoanStatus.trim(),
-        isLoanOverdue: formData.isLoanOverdue,
-        hasAppliedForPolicyFund: formData.hasAppliedForPolicyFund,
+        isFirstStartup: formData.isFirstStartup,
+        hasPastClaim: formData.hasPastClaim,
         requestedAt: kstDate.toISOString(),
         ...formElements,
       };
@@ -135,8 +132,8 @@ export function PhoneConsultationForm({ title }: PhoneConsultationFormProps) {
         style={{ boxShadow: `0 25px 50px -12px rgba(0, 0, 0, 0.4)` }}
       >
         <div className="text-center space-y-1.5 mb-5">
-          <p className="text-white text-[22px] md:text-2xl font-extrabold tracking-tight">정책자금 전문가가 유선상으로</p>
-          <p className="text-[22px] md:text-2xl font-black bg-gradient-to-b from-[#FFB648] to-[#FF7A3D] bg-clip-text text-transparent">자세한 설명을 해드립니다.</p>
+          <p className="text-white text-[22px] md:text-2xl font-extrabold tracking-tight">세무 전문가가 유선상으로</p>
+          <p className="text-[22px] md:text-2xl font-black bg-gradient-to-b from-[#FFB648] to-[#FF7A3D] bg-clip-text text-transparent">환급액 조회를 도와드립니다.</p>
           {title && <p className="mt-2 text-white/85 text-[13px] md:text-sm">{title}</p>}
         </div>
 
@@ -191,24 +188,19 @@ export function PhoneConsultationForm({ title }: PhoneConsultationFormProps) {
                 <label className="text-white text-base block">사업자번호</label>
                 <Input placeholder="'-' 없이 10자리 입력" value={formData.businessNumber} onChange={e => handleInputChange('businessNumber', e.target.value)} className="bg-white border-0 h-12 text-gray-800 placeholder:text-gray-500" maxLength={10} required />
               </div>
-               <div className="space-y-2">
-                <label className="text-white text-base block">기대출 현황</label>
-                <Input placeholder="예: 5천만원 / 신용보증기금" value={formData.existingLoanStatus} onChange={e => handleInputChange('existingLoanStatus', e.target.value)} className="bg-white border-0 h-12 text-gray-800 placeholder:text-gray-500" required />
-              </div>
               <div className="space-y-2">
-                <label className="text-white text-base block">기대출 연체 여부</label>
-                <div className="flex h-12 bg-white rounded-md overflow-hidden border border-gray-200">
-                  <Button type="button" onClick={() => handleInputChange('isLoanOverdue', '예')} className={`flex-1 rounded-none h-full border-0 ${formData.isLoanOverdue === '예' ? 'bg-[#f59e0b] text-white hover:bg-[#d97706]' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>예</Button>
-                  <div className="w-px bg-gray-200" />
-                  <Button type="button" onClick={() => handleInputChange('isLoanOverdue', '아니오')} className={`flex-1 rounded-none h-full border-0 ${formData.isLoanOverdue === '아니오' ? 'bg-[#f59e0b] text-white hover:bg-[#d97706]' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>아니오</Button>
+                <label className="text-white text-base block">최초 창업 여부</label>
+                {/* ✨ 수정: 구분선과 테두리를 제거하여 온라인 분석 폼과 동일하게 만듭니다. */}
+                <div className="flex h-12 bg-white rounded-md overflow-hidden">
+                  <Button type="button" onClick={() => handleInputChange('isFirstStartup', '예')} className={`flex-1 rounded-none h-full border-0 ${formData.isFirstStartup === '예' ? 'bg-[#f59e0b] text-white hover:bg-[#d97706]' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>예</Button>
+                  <Button type="button" onClick={() => handleInputChange('isFirstStartup', '아니오')} className={`flex-1 rounded-none h-full border-0 ${formData.isFirstStartup === '아니오' ? 'bg-[#f59e0b] text-white hover:bg-[#d97706]' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>아니오</Button>
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-white text-base block">정책자금 신청 진행 여부</label>
-                <div className="flex h-12 bg-white rounded-md overflow-hidden border border-gray-200">
-                  <Button type="button" onClick={() => handleInputChange('hasAppliedForPolicyFund', '예')} className={`flex-1 rounded-none h-full border-0 ${formData.hasAppliedForPolicyFund === '예' ? 'bg-[#f59e0b] text-white hover:bg-[#d97706]' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>예</Button>
-                  <div className="w-px bg-gray-200" />
-                  <Button type="button" onClick={() => handleInputChange('hasAppliedForPolicyFund', '아니오')} className={`flex-1 rounded-none h-full border-0 ${formData.hasAppliedForPolicyFund === '아니오' ? 'bg-[#f59e0b] text-white hover:bg-[#d97706]' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>아니오</Button>
+                <label className="text-white text-base block">과거 경정청구 진행 여부</label>
+                <div className="flex h-12 bg-white rounded-md overflow-hidden">
+                  <Button type="button" onClick={() => handleInputChange('hasPastClaim', '예')} className={`flex-1 rounded-none h-full border-0 ${formData.hasPastClaim === '예' ? 'bg-[#f59e0b] text-white hover:bg-[#d97706]' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>예</Button>
+                  <Button type="button" onClick={() => handleInputChange('hasPastClaim', '아니오')} className={`flex-1 rounded-none h-full border-0 ${formData.hasPastClaim === '아니오' ? 'bg-[#f59e0b] text-white hover:bg-[#d97706]' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>아니오</Button>
                 </div>
               </div>
             </div>
@@ -241,7 +233,7 @@ export function PhoneConsultationForm({ title }: PhoneConsultationFormProps) {
               type="submit"
               disabled={
                 !formData.name || !formData.birthDate || !formData.gender || !formData.phoneNumber || 
-                !formData.companyName || !formData.businessNumber || !formData.existingLoanStatus || !formData.isLoanOverdue || !formData.hasAppliedForPolicyFund ||
+                !formData.companyName || !formData.businessNumber || !formData.isFirstStartup || !formData.hasPastClaim ||
                 !agreedToPrivacy || !agreedToThirdParty || 
                 isSubmitting
               }
